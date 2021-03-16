@@ -20,9 +20,25 @@ const link = from([
   new HttpLink({ uri: 'https://graphql-pokeapi.vercel.app/api/graphql' })
 ])
 
+const cache = new InMemoryCache({
+  typePolicies: {
+    Query: {
+      fields: {
+        PokemonList: {
+          results: {
+            merge(existing = [], incoming) {
+              return [...existing, ...incoming]
+            },
+          }
+        }
+      }
+    }
+  }
+})
+
 const client = new ApolloClient({
-  cache: new InMemoryCache(),
   link,
+  cache,
 })
 
 function App() {

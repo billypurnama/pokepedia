@@ -23,13 +23,14 @@ const wrapper = css({
   boxShadow: '0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)',
   borderRadius: '4px',
   flexDirection: 'column',
-  width: '80%',
+  width: '90%',
 }, {...flex})
 
 const pokemonWrapper = css({
   textTransform: 'capitalize',
   flexDirection: 'column',
   padding: '20px',
+  width: '100%',
   '& img': {
     transform: 'scale(1.6)',
     zIndex: '-1',
@@ -55,6 +56,7 @@ const pokemonName = css({
 const pokemonDesc = css({
   flexDirection: 'column',
   marginTop: '20px',
+  width: '100%',
 }, {...flex})
 
 const pokemonType = css({
@@ -68,11 +70,36 @@ const pokemonType = css({
   }
 }, {...flex})
 
-const icon = css({
-  margin: '15px 0',
-  transform: 'scale(1.5)',
-  zIndex: '-1',
-  color: '#fa2d48',
+const movePool = css({
+  width: '100%',
+  '& > p': {
+    padding: '10px',
+    fontWeight: 'bold',
+    letterSpacing: '2px',
+    textAlign: 'center',
+  },
+  '& > div': {
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'space-evenly',
+    margin: '10px 0',
+    '& > div': {
+      boxShadow: '0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)',
+      height: '30px',
+      padding: '4px',
+      width: '30%',
+      textAlign: 'center',
+      '@media (min-width: 1280px)': {
+        width: '20%',
+      },
+      '@media (max-width: 600px)': {
+        width: '50%',
+      },
+      '@media (max-width: 380px)': {
+        width: '100%',
+      },
+    }
+  }
 })
 
 const catchButton = css({
@@ -202,6 +229,13 @@ function PokemonDetail() {
   }
 
   const catchPokemon = () => {
+    if (window && window.scroll) {
+      window.scroll({
+        behavior: 'smooth',
+        top: 0,
+        left: 0,
+      })
+    }
     const chance = Math.round(Math.random() * 1) // 0 or 1
     if (chance === 0) {
       // Success Chance
@@ -241,7 +275,18 @@ function PokemonDetail() {
                     })
                   }
                 </div>
-                <MdIcons.MdGames css={icon} />
+                <div css={movePool}>
+                  <p>Possible Moves</p>
+                  <div>
+                    {
+                      data.pokemon.moves.map((move, index) => {
+                        return (
+                          <div key={index}>{move.move.name}</div>
+                        )
+                      })
+                    }
+                  </div>
+                </div>
               </div>
               <button css={catchButton} onClick={catchPokemon}>Catch</button>
             </div>

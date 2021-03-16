@@ -26,6 +26,7 @@ const sideBar = ({ sidebar }) => css`
 	top: 0;
 	left: -100%;
 	transition: 850ms;
+	z-index: 3;
 	${sidebar && `
 		left: 0;
 		transition: 350ms;

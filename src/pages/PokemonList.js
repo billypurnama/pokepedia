@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
 import { useQuery } from '@apollo/client'
@@ -6,6 +6,7 @@ import { GET_POKEMONS } from '../graphql/pokemon'
 import { useHistory } from 'react-router-dom'
 import Modal from '../components/Modal'
 import Spinner from '../components/Spinner'
+import * as AiIcons from 'react-icons/ai'
 
 const container = css({
   padding: '20px 0',
@@ -38,7 +39,7 @@ const card = css`
   user-select: none;
   &:hover {
     transform: scale(1.1);
-    transition: all 150ms ease-in-out;
+    transition: all 350ms ease-in-out;
   }
   & > img {
     height: 150px;
@@ -58,13 +59,32 @@ const title = css`
   text-align: center;
 `
 
+const fetchButton = css({
+  backgroundColor: '#fa2d48',
+  color: '#fff',
+  height: '200px',
+  width: '170px',
+  '&:hover': {
+    '& > svg': {
+      transform: 'rotate(180deg)',
+    }
+  },
+  '& > svg': {
+    height: '100%',
+    transition: 'all 350ms ease-in-out',
+    width: '50px',
+  },
+}, {...card})
+
 function PokemonList() {
+  const [offset, setOffset] = useState(0)
+
   const variables = {
-    limit: 30,
-    offset: 0,
+    limit: 29,
+    offset,
   }
   
-  const { loading, data } = useQuery(GET_POKEMONS, { variables })
+  const { loading, data, fetchMore } = useQuery(GET_POKEMONS, { variables })
 
   const pokemonData = JSON.parse(sessionStorage.getItem('pokemonData'))
 
@@ -74,6 +94,18 @@ function PokemonList() {
     history.push({
       pathname: '/pokemon-detail',
       pokemon,
+    })
+  }
+  
+  const handleFetchMore = () => {
+    // TBU: Merge previous data with upcoming data
+    fetchMore({
+      variables: {
+        limit: 29,
+        offset,
+      }
+    }).then(() => {
+      setOffset(offset + 29)
     })
   }
 
@@ -88,7 +120,7 @@ function PokemonList() {
       </p>
       <div css={wrapper}>
         {
-          data && data.pokemons.results.map(pokemon => {
+          data.pokemons.results && data.pokemons.results.map(pokemon => {
             return (
               <div 
                 css={card} 
@@ -103,6 +135,9 @@ function PokemonList() {
             )
           })
         }
+        <div css={fetchButton} onClick={handleFetchMore}>
+          <AiIcons.AiOutlineReload />
+        </div>
       </div>
     </div>
   )
